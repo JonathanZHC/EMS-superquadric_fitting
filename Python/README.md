@@ -1,64 +1,72 @@
-## Guidelines for Python Implementation
+# 📘 EMS: Probabilistic Superquadric Fitting (Python Implementation)
 
-This is the guideline and structual explanation of the Python implementation of the EMS algorithm.
+This document explains **two separate pipelines**:
 
-### Dependency
+1. **Pipeline A — Visualizing `.ply` / point cloud files** (Open3D only)
+2. **Pipeline B — Running the EMS algorithm to fit superquadrics** (Mayavi + EMS dependencies)
 
-The code is tested under Python 3.8.8, but should have little compatibility concerns.
-The following packages are required to run the EMS algorithm:
+The two pipelines use different conda environments and do **not** depend on each other.
 
-1. numpy 1.19.2
-2. scipy 1.5.2
-3. numba 0.53.1 -- for acceleration based on JIT (Just-In-Time compiler)
+---
 
+# 🔵 Pipeline A — Visualize Point Clouds (Open3D)
 
-For demo, the following packages are needed:
+This pipeline is only for viewing `.ply` files.
 
-1. plyfile -- for loading `.ply` point cloud files
-2. mayavi -- for visualization of meshes and point clouds
-
-### Installation
-
-We recommend to install the EMS package with conda.
-
-1. Create a conda env called 'ems':
+### 1. Create visualization environment
 
 ```bash
-conda create -n ems python=3.8
+conda create -n vis python=3.10 -y
+conda activate vis
+conda install -c conda-forge open3d pyyaml pandas pytz scikit-learn matplotlib scipy h5py tqdm -y
+```
+
+### 2. Visualize a PLY file
+
+```bash
+python tests/test_visualize_pcd.py examples/<obj.ply>
+```
+
+This script loads the `.ply` and visualizes it using **Open3D**.
+
+---
+
+# 🔴 Pipeline B — Fit Superquadric with EMS
+
+This environment is dedicated to running the EMS **probabilistic recovery** algorithm.
+
+### 1. Create EMS environment (strict version constraints)
+
+```bash
+conda create -n ems python=3.8 numpy=1.19.2 scipy=1.5.2 numba=0.53.1 -y
 conda activate ems
 ```
 
-2. Add relevant dependency:
+Install visualization + PLY loader dependencies:
 
 ```bash
-conda install numpy=1.19.2 scipy=1.5.2
-conda install numba=0.53.1
-
-conda install -c conda-forge vtk=8.2
-conda install -c conda-forge mayavi=4.7.1
+conda install -c conda-forge vtk=8.2 mayavi=4.7.1 plyfile -y
 ```
 
-3. Change directory to `/Python` folder:
+### 2. Install EMS package
 
-```
-cd /Python
-```
-
-4. Install the whole package:
-
-```
+```bash
+cd Python
 pip install .
 ```
-    
 
-### Run Demo
+---
 
-The demo script is `/Python/tests/test_script.py`. The demo reads a `.ply` point cloud and returns the parameters of the recovered superquadric, runtime, and visualization as required.
+## ▶️ Run EMS to Fit a Superquadric
 
-For example, in terminal type in
-
-```
+```bash
 python tests/test_script.py examples/<obj.ply> --result --runtime --visualize
 ```
 
-Note the first run of the code takes longer, since the JIT will translate the Python and NumPy code into fast machine code (and will be cached for futher calls).
+### Available flags
+
+| Flag          | Effect                                                    |
+| ------------- | --------------------------------------------------------- |
+| `--result`    | print parameters of recovered superquadric                |
+| `--runtime`   | execution time (note: first run triggers JIT compilation) |
+| `--visualize` | show point cloud + fitted superquadric via Mayavi         |
