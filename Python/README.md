@@ -19,19 +19,46 @@ For demo, the following packages are needed:
 
 ### Installation
 
-We recommend to install the EMS package with `pip`.
+We recommend to install the EMS package with conda.
 
-1. Change directory to `/Python`
-2. Install package: `pip install .`
+1. Create a conda env called 'ems':
+
+```bash
+conda create -n ems python=3.8
+conda activate ems
+```
+
+2. Add relevant dependency:
+
+```bash
+conda install numpy=1.19.2 scipy=1.5.2
+conda install numba=0.53.1
+
+conda install -c conda-forge vtk=8.2
+conda install -c conda-forge mayavi=4.7.1
+```
+
+3. Change directory to `/Python` folder:
+
+```
+cd /Python
+```
+
+4. Install the whole package:
+
+```
+pip install .
+```
     
 
 ### Run Demo
 
-The demo script is `/Python/tests/test_script.py`.
-The demo reads a `.ply` point cloud and returns the parameters of the recovered superquadric, runtime, and visualization as required.
+The demo script is `/Python/tests/test_script.py`. The demo reads a `.ply` point cloud and returns the parameters of the recovered superquadric, runtime, and visualization as required.
 
 For example, in terminal type in
 
-     python test_script.py *.ply file location* --result --runtime --visualize
+```
+python tests/test_script.py examples/<obj.ply> --result --runtime --visualize
+```
 
 Note the first run of the code takes longer, since the JIT will translate the Python and NumPy code into fast machine code (and will be cached for futher calls).
